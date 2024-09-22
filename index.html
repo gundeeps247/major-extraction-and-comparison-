@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Term Search</title>
+</head>
+<body>
+    <h1>Search for a Term in PDF Files</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="POST">
+        <label for="term">Enter the term to search for (e.g., Hemoglobin):</label>
+        <input type="text" id="term" name="term" required><br><br>
+
+        <label for="pdfs">Select PDF files to upload:</label>
+        <input type="file" id="pdfs" name="pdfs" multiple accept="application/pdf" required><br><br>
+
+        <button type="submit">Search</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('http://127.0.0.1:5000/search', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
