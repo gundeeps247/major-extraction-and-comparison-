@@ -30,26 +30,21 @@ def extract_text_from_pdf(pdf_path):
         return None
 
 def search_term_in_text(term, text):
-    """Search for the term in the text and extract the value following it."""
-    term_lower = term.lower()
+    """Search for the exact term in the text and extract the value following it."""
+    # Escape special characters in the term
+    term_escaped = re.escape(term)
 
-    # Check if the term is found in the text
-    if term_lower in text.lower():
-        if term_lower == "test results":
-            # Extract everything under "Test Results" until the next double newline or end of text
-            pattern = rf"{term}:\s*(.*?)(?:\n\n|\Z)"
-            match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
-            if match:
-                return match.group(1).strip()  # Return the section under Test Results
-        else:
-            # For single terms (like "Hemoglobin"), capture the specific value
-            pattern = rf"{term}\s*[:=]?\s*([\d.]+)"
-            match = re.search(pattern, text, re.IGNORECASE)
+    # Create a pattern to match the term followed by its value
+    pattern = rf"{term_escaped}\s*[:=]?\s*([\d.,]+)"
 
-            if match:
-                return match.group(1)  # Return the captured value
+    # Perform a case-insensitive search
+    match = re.search(pattern, text, re.IGNORECASE)
+
+    if match:
+        return match.group(1).strip()  # Return the value after the term
 
     return None
+
 
 
 
